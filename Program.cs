@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmuladorCajero.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace EmuladorCajero
     {
         static void Main(string[] args)
         {
+            ResponseDTO transactionaCoreResponse = new ResponseDTO();
+            BusinessActivityService _service = new BusinessActivityService(Convert.ToString(72172128), ref transactionaCoreResponse);
         }
     }
 }

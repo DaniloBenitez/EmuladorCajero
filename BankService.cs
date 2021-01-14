@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Reflection;
-using System.Xml;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
-using Newtonsoft.Json;
 using EmuladorCajero.DTO;
 using EmuladorCajero;
 
@@ -30,13 +25,15 @@ namespace BankInterface
         const int BUFFER_SIZE = 1024;
         const int MAX_TRIES = 3;
 
-        public BankService(string host, string user, string pass, ref ResponseDTO r)
+        public BankService(string host, string user, string pass, bool rememberMe, ref ResponseDTO r)
         {
            // test(new Uri(host), user, pass);
             _host = host;
             Hashtable parametros = new Hashtable();
+            Console.WriteLine("Autenticando usuario: " + user);
             parametros.Add("username", user);
             parametros.Add("password", pass);
+            parametros.Add("rememberMe", rememberMe);
             Hashtable respuesta = Post("api/authenticate", parametros);
              r = new ResponseDTO();
             Mapper.MapObject(respuesta,r);
@@ -45,6 +42,13 @@ namespace BankInterface
             if (!r.status && string.IsNullOrWhiteSpace(r.message))
             {
                 r.message = "Se produjo un error al obtener el token";
+            }
+            if (!r.status)
+            {
+                Console.WriteLine(r.message);
+            } else
+            {
+                Console.WriteLine(user + " autenticado correctamente");
             }
 
         }

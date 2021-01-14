@@ -37,6 +37,7 @@
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,6 +48,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BankService.cs" />
+    <Compile Include="BusinessActivity\BusinessActivityService.cs" />
+    <Compile Include="DTO\ClienteDTO.cs" />
+    <Compile Include="DTO\CuentaDTO.cs" />
+    <Compile Include="DTO\CuentasClienteDTO.cs" />
+    <Compile Include="DTO\GrupoToken.cs" />
+    <Compile Include="DTO\ResponseDTO.cs" />
+    <Compile Include="DTO\ResponseTransactionDTO.cs" />
+    <Compile Include="DTO\RespuestaTokenDTO.cs" />
+    <Compile Include="DTO\TokenDTO.cs" />
+    <Compile Include="DTO\TransactionDTO.cs" />
+    <Compile Include="eCatConfig.cs" />
+    <Compile Include="JSON.cs" />
+    <Compile Include="Mapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
