@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using BankInterface;
 using EmuladorCajero.DTO;
@@ -106,8 +106,8 @@ namespace EmuladorCajero
                 data = _service.Post("mscuentatransaccion/api/tansaccion/credito", parameters);    
             else
                 data = _service.Post("mscuentatransaccion/api/tansaccion/debito", parameters);
-            
-            var respuesta = Mapper.MapResponse(res, data);
+
+            ResponseDTO respuesta = Mapper.MapResponse(res, data);
             
             long dni = 0;
             if (isCredit && respuesta.status && long.TryParse(pTransaction.dniDestino, out dni) && dni > 0)

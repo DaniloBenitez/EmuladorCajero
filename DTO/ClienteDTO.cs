@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EmuladorCajero.DTO
 {
-    internal class ClienteDTO
+    public class ClienteDTO
     {
         public double id { get; set; }
         public string dni { get; set; }

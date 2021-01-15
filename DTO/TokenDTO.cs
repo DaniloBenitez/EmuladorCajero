@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EmuladorCajero.DTO
 {
-    class TokenDTO
+    public class TokenDTO
     {
         public double tokenId { get; set; }
         public string token { get; set; }
