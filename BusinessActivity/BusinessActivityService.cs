@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using BankInterface;
 using EmuladorCajero.DTO;
 
 namespace EmuladorCajero
@@ -53,6 +52,7 @@ namespace EmuladorCajero
                 parametros.Add("activated", true);
                 parametros.Add("login", newUser);
                 parametros.Add("password", newPass);
+                parametros.Add("cuitDelComercio", eCatConfig.GetValue("CuitComercio"));
 
                 Hashtable data = _service.Post("api/users/registerATM", parametros);
                 res = Mapper.MapResponse(res, data);
@@ -61,7 +61,7 @@ namespace EmuladorCajero
                     eCatConfig.AddValue("ATMUser", newUser);
                     eCatConfig.AddValue("ATMPass", newPass);
                     eCatConfig.AddValue("Registered", "1");
-                    eCatConfig.ProtectConfiguration();
+                    //eCatConfig.ProtectConfiguration();
                 }
                 else
                 {
@@ -114,6 +114,18 @@ namespace EmuladorCajero
                 _service.Put(string.Format("api/users/{0}/reenviarToken", dni));
             
             return respuesta;
+        }
+
+        public ResponseDTO GetMovimiento(double transactionId)
+        {
+            MovimientoDTO res = new MovimientoDTO();
+            Hashtable data = _service.Get(string.Format("mscuentatransaccion/api/movimientos/transaccion/{0}", transactionId));
+            return Mapper.MapResponse(res, data);
+        }
+
+        public bool Available()
+        {
+            return _service.Available();
         }
     }
 }

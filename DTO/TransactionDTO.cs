@@ -19,5 +19,7 @@ namespace EmuladorCajero.DTO
         public double? tokenId { get; set; }
         public string origenRegistro { get; set; }
         public double idUsuario { get; set; }
+
+        public double costoOperacion { get; set; }
     }
 }

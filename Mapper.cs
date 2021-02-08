@@ -22,28 +22,37 @@ namespace EmuladorCajero
         }
         private static void SetObjectProperty(string propertyName, object value, object obj)
         {
-            PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
-            
-            if (propertyInfo != null)
+            try
             {
-                if (value is Hashtable)
-                    MapObject((Hashtable)value, propertyInfo.GetValue(obj, null));
-                else if (value is ArrayList)
+                PropertyInfo propertyInfo = obj.GetType().GetProperty(propertyName);
+
+                if (propertyInfo != null)
                 {
-                    ArrayList v = value as ArrayList;
-                    IList arr = (IList)propertyInfo.GetValue(obj, null);
-                    string arrName = Convert.ToString(arr);
-                    object newItem = GetAssembly().CreateInstance(arrName.Substring(arrName.IndexOf('[') + 1, arrName.Length - arrName.IndexOf('[') - 2));
-                    foreach (var item in v)
+                    if (value is Hashtable)
+                        MapObject((Hashtable)value, propertyInfo.GetValue(obj, null));
+                    else if (value is ArrayList)
                     {
-                        MapObject((Hashtable)item, newItem);
-                        arr.Add(newItem);
+                        ArrayList v = value as ArrayList;
+                        IList arr = (IList)propertyInfo.GetValue(obj, null);
+                        string arrName = Convert.ToString(arr);
+                        object newItem = GetAssembly().CreateInstance(arrName.Substring(arrName.IndexOf('[') + 1, arrName.Length - arrName.IndexOf('[') - 2));
+                        foreach (var item in v)
+                        {
+                            MapObject((Hashtable)item, newItem);
+                            arr.Add(newItem);
+                        }
                     }
+                    else
+                        propertyInfo.SetValue(obj, value, null);
                 }
-                else
-                    propertyInfo.SetValue(obj, value, null);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(propertyName + ": " + ex.Message);
             }
         }
+
         public static ResponseDTO MapResponse(object obj, Hashtable ht)
         {
             ResponseDTO res = new ResponseDTO() { responseData = obj};

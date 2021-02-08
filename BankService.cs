@@ -6,9 +6,8 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using EmuladorCajero.DTO;
-using EmuladorCajero;
 
-namespace BankInterface
+namespace EmuladorCajero
 {
     internal class BankService : IDisposable
     {
@@ -165,6 +164,11 @@ namespace BankInterface
                 }
             }
             return data;
+        }
+
+        public bool Available()
+        {
+            return _token != null && _token.Length > 0;
         }
         
         #region IDisposable Members

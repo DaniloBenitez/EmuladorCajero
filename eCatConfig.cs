@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Xml;
 
-namespace BankInterface
+namespace EmuladorCajero
 {
     public static class eCatConfig
     {

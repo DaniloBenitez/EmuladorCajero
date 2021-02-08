@@ -53,6 +53,7 @@
     <Compile Include="DTO\CuentaDTO.cs" />
     <Compile Include="DTO\CuentasClienteDTO.cs" />
     <Compile Include="DTO\GrupoToken.cs" />
+    <Compile Include="DTO\MovimientoDTO.cs" />
     <Compile Include="DTO\ResponseDTO.cs" />
     <Compile Include="DTO\ResponseTransactionDTO.cs" />
     <Compile Include="DTO\RespuestaTokenDTO.cs" />

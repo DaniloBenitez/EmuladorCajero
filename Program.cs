@@ -8,13 +8,19 @@ namespace EmuladorCajero
         static void Main(string[] args)
         {
             string salida = string.Empty;
+            long terminalID = int.Parse(eCatConfig.GetValue("TerminalID"));
+            ResponseDTO transactionaCoreResponse = new ResponseDTO();
+            BusinessActivityService _service = new BusinessActivityService(Convert.ToString(terminalID), ref transactionaCoreResponse);
+            Console.WriteLine("\n");
+            if (!_service.Available())
+            {
+                Console.WriteLine("Servicio no disponible.");
+                Console.WriteLine("Verificar la configuración en EmuladorCajero.exe.Config");
+                Console.ReadLine();
+                return;
+            }
             while (!salida.Equals("exit"))
             {
-                long terminalID = 72172129;
-                ResponseDTO transactionaCoreResponse = new ResponseDTO();
-                BusinessActivityService _service = new BusinessActivityService(Convert.ToString(terminalID), ref transactionaCoreResponse);
-                Console.WriteLine("\n");
-
                 int dni;
                 Console.Write("Ingrese DNI: ");
                 while (!int.TryParse(Console.ReadLine(), out dni))
@@ -29,10 +35,6 @@ namespace EmuladorCajero
                     Console.Write("Ingrese un token numérico: ");
                 }
 
-                if (token <= 0)
-                {
-                    token = 800791;
-                }
 
                 ResponseDTO response = _service.GetToken(dni, token);
                 if (!response.status)
@@ -43,7 +45,27 @@ namespace EmuladorCajero
                     continue;
                 }
                 RespuestaTokenDTO respuestaToken = (RespuestaTokenDTO)response.responseData;
+                Console.WriteLine("");
                 Console.WriteLine("Usuario: " + respuestaToken.clienteDTO.alias);
+                foreach (CuentaDTO cuenta in respuestaToken.cuentas) {
+                    Console.WriteLine("Cuenta: " + cuenta.numero);
+                    string tipoDeCuenta = string.Empty;
+                    switch (cuenta.tipoCuentaId)
+                    {
+                        case 19:
+                            tipoDeCuenta = "MoneyFi";
+                            break;
+                        case 20:
+                            tipoDeCuenta = "Temporal";
+                            break;
+                        default:
+                            tipoDeCuenta = cuenta.tipoCuentaId.ToString();
+                            break;
+                    }
+
+                    Console.WriteLine("Tipo de cuenta: " + tipoDeCuenta);
+                    Console.WriteLine("Saldo total: " + cuenta.saldo);
+                }
                 Console.WriteLine("Saldo del token: " + respuestaToken.tokenCheckDTO.saldoToken);
                 Console.WriteLine("Estado del token: " + respuestaToken.tokenCheckDTO.respuesta);
                 Console.WriteLine("\n");
@@ -72,13 +94,22 @@ namespace EmuladorCajero
                 if (responseDebito.status)
                 {
                     ResponseTransactionDTO res = (ResponseTransactionDTO)responseDebito.responseData;
+                    ResponseDTO responseMovimiento = _service.GetMovimiento(res.id);
+                    MovimientoDTO mov = (MovimientoDTO)responseMovimiento.responseData;
                     Console.WriteLine("\n");
                     Console.WriteLine(responseDebito.description);
-                    Console.WriteLine("");
-                    Console.WriteLine("       Código de la operación: " + res.codigo);
-                    Console.WriteLine("       Tipo de operación: " + res.detalle);
-                    Console.WriteLine("       Fecha de la operación: " + res.fecha);
-                    Console.WriteLine("       Token remanente: " + res.numeroToken);
+
+                    DateTime fecha = Convert.ToDateTime(res.fecha);
+                    Console.WriteLine("\nRedATM");
+                    Console.WriteLine("Fecha: " + fecha.Date.ToShortDateString());
+                    Console.WriteLine("Hora: " + fecha.TimeOfDay);
+                    Console.WriteLine("Terminal: " + res.terminal);
+                    //Console.WriteLine("Número de cuenta: " + );
+                    Console.WriteLine("Número de transacción: " + res.codigo);
+                    Console.WriteLine("Transacción: " + res.detalle);
+                    Console.WriteLine("Importe: $" + (mov.importeOrigen - mov.transaccion.costoOperacion).ToString()); ;
+                    Console.WriteLine("Costo de la transacción: $" + mov.transaccion.costoOperacion.ToString());
+                    Console.WriteLine("Su saldo es (S.E.U.O): $" + mov.saldo);
                     Console.WriteLine("\n");
                 }
                 else

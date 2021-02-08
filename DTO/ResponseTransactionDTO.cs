@@ -12,5 +12,7 @@ namespace EmuladorCajero.DTO
         public string fechaVencimientoToken { get; set; }
         public string detalle { get; set; }
         public string fecha { get; set; }
+        public double? costoOperacion { get; set; }
+        public string terminal { get; set; }
     }
 }
