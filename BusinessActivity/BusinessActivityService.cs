@@ -103,7 +103,7 @@ namespace EmuladorCajero
             Hashtable data = new Hashtable();
 
             if (isCredit)
-                data = _service.Post("mscuentatransaccion/api/tansaccion/credito", parameters);    
+                data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReverso", parameters);    
             else
                 data = _service.Post("mscuentatransaccion/api/tansaccion/debito", parameters);
 
