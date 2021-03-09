@@ -1,5 +1,6 @@
 ﻿using EmuladorCajero.DTO;
 using System;
+using System.Collections.Generic;
 
 namespace EmuladorCajero
 {
@@ -126,32 +127,37 @@ namespace EmuladorCajero
                             dniOrigen = Convert.ToString(dni),
                             dniDestino = Convert.ToString(dni),
                             terminal = Convert.ToString(terminalID),
-                            importe = (decimal)mov.importeOrigen,
+                            importe = (decimal)mov.importeOrigen - (decimal)mov.transaccion.costoOperacion,
+                            comision = mov.transaccion.costoOperacion,
                             idUsuario = respuestaToken.tokenCheckDTO.idUsuario,
                             tokenId = respuestaToken.tokenCheckDTO.tokenId
                         };
                         ResponseDTO responseCredito = _service.Debit(creditDTO, true);
                         if (responseCredito.status)
                         {
-                            ResponseTransactionDTO resReversa = (ResponseTransactionDTO)responseCredito.responseData;
-                            ResponseDTO responseMovimientoReversa = _service.GetMovimiento(resReversa.id);
-                            MovimientoDTO movReversa = (MovimientoDTO)responseMovimientoReversa.responseData;
-                            Console.WriteLine("\n");
-                            Console.WriteLine("Reversa generada correctamente");
-                            Console.WriteLine(responseCredito.description);
-                            DateTime fechaReversa = Convert.ToDateTime(resReversa.fecha);
-                            Console.WriteLine("\nRedATM REVERSA");
-                            Console.WriteLine("Fecha: " + fechaReversa.Date.ToShortDateString());
-                            Console.WriteLine("Hora: " + fechaReversa.TimeOfDay);
-                            Console.WriteLine("Terminal: " + resReversa.terminal);
-                            //Console.WriteLine("Número de cuenta: " + );
-                            Console.WriteLine("Número de transacción: " + resReversa.codigo);
-                            Console.WriteLine("Transacción: " + resReversa.detalle);
-                            Console.WriteLine("Importe: $" + (movReversa.importeOrigen).ToString()); ;
-                            Console.WriteLine("Costo de la transacción: $" + movReversa.transaccion.costoOperacion.ToString());
-                            Console.WriteLine("Su saldo es (S.E.U.O): $" + movReversa.saldo);
-                            Console.WriteLine("\n");
-                            saldoPostRev = movReversa.saldo;
+                            //ResponseTransactionDTO resReversa = (ResponseTransactionDTO)responseCredito.responseData;
+                            List<ResponseTransactionDTO> resReversaList = new List<ResponseTransactionDTO>((IEnumerable<ResponseTransactionDTO>)responseCredito.responseData);
+                            foreach (var resReversa in resReversaList)
+                            {
+                                ResponseDTO responseMovimientoReversa = _service.GetMovimiento(resReversa.id);
+                                MovimientoDTO movReversa = (MovimientoDTO)responseMovimientoReversa.responseData;
+                                Console.WriteLine("\n");
+                                Console.WriteLine("Reversa generada correctamente");
+                                Console.WriteLine(responseCredito.description);
+                                DateTime fechaReversa = Convert.ToDateTime(resReversa.fecha);
+                                Console.WriteLine("\nRedATM REVERSA");
+                                Console.WriteLine("Fecha: " + fechaReversa.Date.ToShortDateString());
+                                Console.WriteLine("Hora: " + fechaReversa.TimeOfDay);
+                                Console.WriteLine("Terminal: " + resReversa.terminal);
+                                //Console.WriteLine("Número de cuenta: " + );
+                                Console.WriteLine("Número de transacción: " + resReversa.codigo);
+                                Console.WriteLine("Transacción: " + resReversa.detalle);
+                                Console.WriteLine("Importe: $" + (movReversa.importeOrigen).ToString()); ;
+                                Console.WriteLine("Costo de la transacción: $" + movReversa.transaccion.costoOperacion.ToString());
+                                Console.WriteLine("Su saldo es (S.E.U.O): $" + movReversa.saldo);
+                                Console.WriteLine("\n");
+                                saldoPostRev = movReversa.saldo;
+                            }
                         }
                         else
                         {

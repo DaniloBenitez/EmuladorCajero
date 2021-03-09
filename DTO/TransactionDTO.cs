@@ -20,6 +20,8 @@ namespace EmuladorCajero.DTO
         public string origenRegistro { get; set; }
         public double idUsuario { get; set; }
 
+        public double comision { get; set; }
+
         public double costoOperacion { get; set; }
     }
 }

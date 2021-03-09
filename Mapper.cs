@@ -34,10 +34,10 @@ namespace EmuladorCajero
                     {
                         ArrayList v = value as ArrayList;
                         IList arr = (IList)propertyInfo.GetValue(obj, null);
-                        string arrName = Convert.ToString(arr);
-                        object newItem = GetAssembly().CreateInstance(arrName.Substring(arrName.IndexOf('[') + 1, arrName.Length - arrName.IndexOf('[') - 2));
                         foreach (var item in v)
                         {
+                            string arrName = Convert.ToString(arr);
+                            object newItem = GetAssembly().CreateInstance(arrName.Substring(arrName.IndexOf('[') + 1, arrName.Length - arrName.IndexOf('[') - 2));
                             MapObject((Hashtable)item, newItem);
                             arr.Add(newItem);
                         }

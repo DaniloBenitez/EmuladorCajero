@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using EmuladorCajero.DTO;
 
 namespace EmuladorCajero
@@ -86,7 +87,7 @@ namespace EmuladorCajero
         public ResponseDTO Debit(TransactionDTO pTransaction, bool isCredit = false)
         {
             Hashtable parameters = new Hashtable();
-            
+
             parameters.Add("fecha", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
             parameters.Add("origenSolicitud", "A");
             parameters.Add("origenRegistro", "atm");
@@ -95,24 +96,36 @@ namespace EmuladorCajero
             parameters.Add("tokenId", pTransaction.tokenId);
             parameters.Add("idUsuario", pTransaction.idUsuario);
             if (isCredit)
+            {
                 parameters.Add("dniDestino", pTransaction.dniDestino);
+                parameters.Add("comision", pTransaction.comision);
+            }
             else
+            {
                 parameters.Add("dniOrigen", pTransaction.dniOrigen);
-            
-            ResponseTransactionDTO res = new ResponseTransactionDTO();
+            }
+
+            //List<ResponseTransactionDTO> res = new List<ResponseTransactionDTO>();
+            object res = null;
             Hashtable data = new Hashtable();
 
             if (isCredit)
-                data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReverso", parameters);    
+            {
+                data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReverso", parameters);
+                res = new List<ResponseTransactionDTO>();
+            }
             else
+            {
                 data = _service.Post("mscuentatransaccion/api/tansaccion/debito", parameters);
+                res = new ResponseTransactionDTO();
+            }
 
             ResponseDTO respuesta = Mapper.MapResponse(res, data);
-            
+
             long dni = 0;
             if (isCredit && respuesta.status && long.TryParse(pTransaction.dniDestino, out dni) && dni > 0)
                 _service.Put(string.Format("api/users/{0}/reenviarToken", dni));
-            
+
             return respuesta;
         }
 
