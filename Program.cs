@@ -99,25 +99,32 @@ namespace EmuladorCajero
                 ResponseDTO responseDebito = _service.Debit(debitDTO);
                 if (responseDebito.status)
                 {
-                    ResponseTransactionDTO res = (ResponseTransactionDTO)responseDebito.responseData;
-                    ResponseDTO responseMovimiento = _service.GetMovimiento(res.id);
-                    MovimientoDTO mov = (MovimientoDTO)responseMovimiento.responseData;
-                    Console.WriteLine("\n");
-                    Console.WriteLine(responseDebito.description);
+                    decimal importeRetiro = 0;
+                    double costoOperacion = 0;
+                    List<ResponseTransactionDTO> resList = new List<ResponseTransactionDTO>((IEnumerable<ResponseTransactionDTO>)responseDebito.responseData);
+                    foreach (ResponseTransactionDTO res in resList)
+                    {
+                        ResponseDTO responseMovimiento = _service.GetMovimiento(res.id);
+                        MovimientoDTO mov = (MovimientoDTO)responseMovimiento.responseData;
+                        Console.WriteLine("\n");
+                        Console.WriteLine(responseDebito.description);
 
-                    DateTime fecha = Convert.ToDateTime(res.fecha);
-                    Console.WriteLine("\nRedATM");
-                    Console.WriteLine("Fecha: " + fecha.Date.ToShortDateString());
-                    Console.WriteLine("Hora: " + fecha.TimeOfDay);
-                    Console.WriteLine("Terminal: " + res.terminal);
-                    //Console.WriteLine("Número de cuenta: " + );
-                    Console.WriteLine("Número de transacción: " + res.codigo);
-                    Console.WriteLine("Transacción: " + res.detalle);
-                    Console.WriteLine("Importe: $" + (mov.importeOrigen - mov.transaccion.costoOperacion).ToString()); ;
-                    Console.WriteLine("Costo de la transacción: $" + mov.transaccion.costoOperacion.ToString());
-                    Console.WriteLine("Su saldo es (S.E.U.O): $" + mov.saldo);
-                    saldoPostDeb = mov.saldo;
-                    Console.WriteLine("\n");
+                        DateTime fecha = Convert.ToDateTime(res.fecha);
+                        Console.WriteLine("\nRedATM");
+                        Console.WriteLine("Fecha: " + fecha.Date.ToShortDateString());
+                        Console.WriteLine("Hora: " + fecha.TimeOfDay);
+                        Console.WriteLine("Terminal: " + res.terminal);
+                        //Console.WriteLine("Número de cuenta: " + );
+                        Console.WriteLine("Número de transacción: " + res.codigo);
+                        Console.WriteLine("Transacción: " + res.detalle);
+                        Console.WriteLine("Importe: $" + (mov.importeOrigen - mov.transaccion.costoOperacion).ToString()); ;
+                        Console.WriteLine("Costo de la transacción: $" + mov.transaccion.costoOperacion.ToString());
+                        Console.WriteLine("Su saldo es (S.E.U.O): $" + mov.saldo);
+                        importeRetiro += (decimal)mov.importeOrigen - (decimal)mov.transaccion.costoOperacion;
+                        costoOperacion += mov.transaccion.costoOperacion;
+                        saldoPostDeb = mov.saldo;
+                        Console.WriteLine("\n"); 
+                    }
                     Console.WriteLine("¿Desea simular una reversa?");
                     Console.Write("-> Tipee \"yes\" para confirmar, o cualquier otro caracter para continuar: ");
                     if (Console.ReadLine().Equals("yes"))
@@ -127,17 +134,16 @@ namespace EmuladorCajero
                             dniOrigen = Convert.ToString(dni),
                             dniDestino = Convert.ToString(dni),
                             terminal = Convert.ToString(terminalID),
-                            importe = (decimal)mov.importeOrigen - (decimal)mov.transaccion.costoOperacion,
-                            comision = mov.transaccion.costoOperacion,
+                            importe = importeRetiro,
+                            comision = costoOperacion,
                             idUsuario = respuestaToken.tokenCheckDTO.idUsuario,
                             tokenId = respuestaToken.tokenCheckDTO.tokenId
                         };
                         ResponseDTO responseCredito = _service.Debit(creditDTO, true);
                         if (responseCredito.status)
                         {
-                            //ResponseTransactionDTO resReversa = (ResponseTransactionDTO)responseCredito.responseData;
                             List<ResponseTransactionDTO> resReversaList = new List<ResponseTransactionDTO>((IEnumerable<ResponseTransactionDTO>)responseCredito.responseData);
-                            foreach (var resReversa in resReversaList)
+                            foreach (ResponseTransactionDTO resReversa in resReversaList)
                             {
                                 ResponseDTO responseMovimientoReversa = _service.GetMovimiento(resReversa.id);
                                 MovimientoDTO movReversa = (MovimientoDTO)responseMovimientoReversa.responseData;

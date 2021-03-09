@@ -105,26 +105,19 @@ namespace EmuladorCajero
                 parameters.Add("dniOrigen", pTransaction.dniOrigen);
             }
 
-            //List<ResponseTransactionDTO> res = new List<ResponseTransactionDTO>();
-            object res = null;
+            List<ResponseTransactionDTO> res = new List<ResponseTransactionDTO>();
             Hashtable data = new Hashtable();
 
             if (isCredit)
             {
                 data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReverso", parameters);
-                res = new List<ResponseTransactionDTO>();
             }
             else
             {
-                data = _service.Post("mscuentatransaccion/api/tansaccion/debito", parameters);
-                res = new ResponseTransactionDTO();
+                data = _service.Post("mscuentatransaccion/api/tansaccion/retiro", parameters);
             }
 
             ResponseDTO respuesta = Mapper.MapResponse(res, data);
-
-            long dni = 0;
-            if (isCredit && respuesta.status && long.TryParse(pTransaction.dniDestino, out dni) && dni > 0)
-                _service.Put(string.Format("api/users/{0}/reenviarToken", dni));
 
             return respuesta;
         }
