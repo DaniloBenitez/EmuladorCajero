@@ -23,5 +23,7 @@ namespace EmuladorCajero.DTO
         public double comision { get; set; }
 
         public double costoOperacion { get; set; }
+
+        public long idAsociadoALaTransaccion { get; set; }
     }
 }

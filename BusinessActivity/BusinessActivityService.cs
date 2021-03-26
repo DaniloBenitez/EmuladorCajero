@@ -99,6 +99,7 @@ namespace EmuladorCajero
             {
                 parameters.Add("dniDestino", pTransaction.dniDestino);
                 parameters.Add("comision", pTransaction.comision);
+                parameters.Add("idAsociadoALaTransaccion", pTransaction.idAsociadoALaTransaccion);
             }
             else
             {
@@ -110,7 +111,7 @@ namespace EmuladorCajero
 
             if (isCredit)
             {
-                data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReverso", parameters);
+                data = _service.Post("mscuentatransaccion/api/tansaccion/creditoReversoATestear", parameters);
             }
             else
             {

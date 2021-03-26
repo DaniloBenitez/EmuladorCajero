@@ -99,9 +99,9 @@ namespace EmuladorCajero
                 ResponseDTO responseDebito = _service.Debit(debitDTO);
                 if (responseDebito.status)
                 {
-                    decimal importeRetiro = 0;
                     double costoOperacion = 0;
                     List<ResponseTransactionDTO> resList = new List<ResponseTransactionDTO>((IEnumerable<ResponseTransactionDTO>)responseDebito.responseData);
+                    long idTransaccion = (long)resList[0].id;
                     foreach (ResponseTransactionDTO res in resList)
                     {
                         ResponseDTO responseMovimiento = _service.GetMovimiento(res.id);
@@ -120,7 +120,6 @@ namespace EmuladorCajero
                         Console.WriteLine("Importe: $" + (mov.importeOrigen - mov.transaccion.costoOperacion).ToString()); ;
                         Console.WriteLine("Costo de la transacción: $" + mov.transaccion.costoOperacion.ToString());
                         Console.WriteLine("Su saldo es (S.E.U.O): $" + mov.saldo);
-                        importeRetiro += (decimal)mov.importeOrigen - (decimal)mov.transaccion.costoOperacion;
                         costoOperacion += mov.transaccion.costoOperacion;
                         saldoPostDeb = mov.saldo;
                         Console.WriteLine("\n"); 
@@ -134,10 +133,11 @@ namespace EmuladorCajero
                             dniOrigen = Convert.ToString(dni),
                             dniDestino = Convert.ToString(dni),
                             terminal = Convert.ToString(terminalID),
-                            importe = importeRetiro,
+                            importe = importe,
                             comision = costoOperacion,
                             idUsuario = respuestaToken.tokenCheckDTO.idUsuario,
-                            tokenId = respuestaToken.tokenCheckDTO.tokenId
+                            tokenId = respuestaToken.tokenCheckDTO.tokenId,
+                            idAsociadoALaTransaccion = idTransaccion
                         };
                         ResponseDTO responseCredito = _service.Debit(creditDTO, true);
                         if (responseCredito.status)
