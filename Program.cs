@@ -63,6 +63,9 @@ namespace EmuladorCajero
                         case 20:
                             tipoDeCuenta = "Temporal";
                             break;
+                        case 46:
+                            tipoDeCuenta = "Cuenta Prestamos";
+                            break;
                         default:
                             tipoDeCuenta = cuenta.tipoCuentaId.ToString();
                             break;
